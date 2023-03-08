@@ -6,8 +6,6 @@ namespace Diploma;
 class Program
 {
 
-    // Методи що містять в імені desing домомагають зробити "красіво"
-
     //Дизайн-метод для виведення тексту по центру
     static void DesingCenterText(string text)
     {
@@ -55,7 +53,41 @@ class Program
 
     }
 
-    // Метод вітання користувача повертає ім'я користувача
+    // Дизайн-метод псевдо-очікування відповіді програми
+    static void DesingWaiting()
+    {
+        Console.Write("\t\t\tДумаю...");
+        Thread.Sleep(1000);
+        Console.Write("генерую...");
+        Thread.Sleep(1000);
+        Console.WriteLine("комплектую...");
+        Thread.Sleep(1000);
+        DesingEmptyLines(2);
+    }
+
+    //Дизайн-метод для друку масуви з результатами примає масив який потрібно надрукувати
+    static void DesingPrintFormulasTable(string[] formulas)
+    {
+        // Визначити ширину першого стовпчика для номерів формул
+        int firstColWidth = formulas.Length.ToString().Length;
+
+        // Форматування рядка заголовка таблиці
+        string header = "{0,-" + firstColWidth + "} | {1,-30}";
+
+        // Виведення заголовка таблиці
+        Console.WriteLine(header, "\n\t\tNo.", "Formula");
+        Console.Write(new string(' ', 15));
+        Console.WriteLine(new string('-', 60));
+
+        // Виведення формул в табличному вигляді
+        for (int i = 0; i < formulas.Length; i++)
+        {
+            Console.WriteLine("\t\t{0,-" + firstColWidth + "} | {1,-30}", i + 1, formulas[i]);
+        }
+    }
+
+
+    // Метод вітання користувача повертає ім'я користувача або присвоює імя анонім
     static string Welcome()
     {
         DesingEmptyLines(2);
@@ -77,12 +109,13 @@ class Program
         return userName;
     }
 
+    // метод для отримання відповіді користувача у форматі так чи ні
     static bool GetUserConfirmation(string message)
     {
         while (true)
         {
             Console.Write(message + " (Y/N): ");
-            string input = Console.ReadLine().Trim().ToUpper();
+            string input = Console.ReadLine().Trim().ToUpper(); //прибираємо пробіли та великі літери
 
             if (input == "Y")
             {
@@ -100,10 +133,14 @@ class Program
         }
     }
 
-    /*м*/
+    /* додатковий метод для виконання методу GenerateFormulas приймає  рівень складносі 
+     * та масив зі змінними і повертає  згенеровані підвормули, 
+     * рівень складності використовується для визначення к-ті компонентів у формулі*/
     static string GenerateSubFormulas(int level, Random random, string[] variables)
     {
+        //можливі оператори
         string[] operators = new string[] { "&&", "||", "!", "^", "<=>", "=>" };
+        // якщо рівень складност або к-ть зміних 1 можливі лише два варіанти 
         if (level == 1 || variables.Length == 1)
         {
             int varIndex = random.Next(variables.Length);
@@ -111,32 +148,45 @@ class Program
             string formula = (randomNumber == 0) ? "!" + variables[varIndex] : variables[varIndex];
             return formula;
         }
+        /*інакше застосовується рекурсія для застосування попереднього рівня складності поки
+         * рівень складності не буде дорівнювати 1*/
         else
         {
+            // створюємо масив для поєднання 2-х підформул
             string[] subFormulas = new string[2];
+            // формування підвормул застосовуючи рекурсію
             do
             {
                 subFormulas[0] = GenerateSubFormulas(level - 1, random, variables);
                 subFormulas[1] = GenerateSubFormulas(level - 1, random, variables);
             }
+            //перевірка унікальності змінних
             while (!CheckUniqueVariables(subFormulas[0]) || !CheckUniqueVariables(subFormulas[1]));
             string oper = operators[random.Next(operators.Length)];
+            //побудова підформули для заперечення
             if (oper == "!")
             {
                 string subFormula = GenerateSubFormulas(level - 1, random, variables);
                 return oper + subFormula;
             }
+            // склейка Join підвормул в один рядок 
             string formula = "(" + string.Join(" " + oper + " ", subFormulas) + ")";
             return formula;
         }
     }
 
+    /*метод для перевірки унікальності зміних використовується в методі
+     * GenerateSubFormulas розбиває рядок formula на окремі слова 
+     * (використовуючи пробіл як роздільник), видалити дубльовані слова та 
+     * зберегти унікальні слова у вигляді масиву рядків і 
+     * перевіряємо чи не змінилась довжина*/
     static bool CheckUniqueVariables(string formula)
     {
         string[] variables = formula.Split(' ').Distinct().ToArray();
         return variables.Length == formula.Split(' ').Length;
     }
 
+    //метод для формування масиву формул, приймає к-ть зміних і перетворює їх в масив літер
     static string GenerateFormulas(int numVariables, Random random)
     {
         string[] variables = new string[numVariables];
@@ -150,6 +200,7 @@ class Program
         return formula;
      }
 
+    // Main метод для генератора (меню) із запитом даних від користувача і повернення їх
     static void GenerateMain()
     {
         int numVariables = 0, numFormulas = 0;
@@ -189,40 +240,237 @@ class Program
             formulas[i] = formula;
         }
         DesingEmptyLines(1);
-
-        // Псевдо-очікування відповіді програми
-        Console.Write("\t\t\tДумаю...");
-        Thread.Sleep(1000);
-        Console.Write("генерую...");
-        Thread.Sleep(1000);
-        Console.WriteLine("комплектую...");
-        Thread.Sleep(1000);
-        DesingEmptyLines(2);
+        DesingWaiting();
         string textResult = ("\t\t Чудово!!! Тримай формули: ");
         DesingColorText(textResult, ConsoleColor.Black, ConsoleColor.Cyan);
         DesingEmptyLines(2);
-        PrintFormulasTable(formulas);
+        DesingPrintFormulasTable(formulas);
     }
 
-    static void PrintFormulasTable(string[] formulas)
+
+    static void DesingChoiceLogicOperator(string textTitle, string textDescription)
     {
-        // Визначити ширину першого стовпчика для номерів формул
-        int firstColWidth = formulas.Length.ToString().Length;
 
-        // Форматування рядка заголовка таблиці
-        string header = "{0,-" + firstColWidth + "} | {1,-30}";
+        string textChouse = $"\t\tВи обрали {textTitle} ";
+        DesingColorText(textChouse, ConsoleColor.Black, ConsoleColor.Yellow);
+        DesingEmptyLines(2);
+        DesingWaiting();
+        textChouse = $"\t\t!Довідка! {textDescription}";
+        DesingColorText(textChouse, ConsoleColor.Black, ConsoleColor.DarkYellow);
+        DesingEmptyLines(2);
+        textChouse = "\t\tтаблиця істиності буде виглядати наступним чином: ";
+        DesingColorText(textChouse, ConsoleColor.Black, ConsoleColor.Yellow);
+        DesingEmptyLines(2);
 
-        // Виведення заголовка таблиці
-        Console.WriteLine(header, "\n\t\tNo.", "Formula");
-        Console.Write(new string(' ', 15));
-        Console.WriteLine(new string('-', 60));
+    }
 
-        // Виведення формул в табличному вигляді
-        for (int i = 0; i < formulas.Length; i++)
+    static void LogicTheoryMenu()
+    {
+        while (true)
         {
-            Console.WriteLine("\t\t{0,-" + firstColWidth + "} | {1,-30}", i + 1, formulas[i]);
+            DesingEmptyLines(2);
+            Console.WriteLine("\t\tОберіть операцію про яку бажаєте дізнатись або натисніть 6:");
+            Console.WriteLine("\t1. Логічне І (&&)");
+            Console.WriteLine("\t2. Логічне АБО (||)");
+            Console.WriteLine("\t3. Виключе АБО XOR (^)");
+            Console.WriteLine("\t4. Заперечення (!)");
+            Console.WriteLine("\t5. Еквівалентність (<=>)");
+            Console.WriteLine("\t6. Імплікація (=>)");
+            Console.WriteLine("\t7. Вихід");
+            Console.Write("Ваш вибір: ");
+
+            string choiceString = Console.ReadLine();
+            int choice;
+
+            if (!int.TryParse(choiceString, out choice))// перевіряємо чи введено число 
+            {
+                string upsError = "\t\t Невірний ввід. Виберіть опцію від 1 до 7.";
+                DesingColorText(upsError, ConsoleColor.Black, ConsoleColor.Red);
+                continue;
+            }
+
+            switch (choice)
+            {
+                case 1:
+                    LogicAnd();
+                    break;
+                case 2:
+                    LogicOr();
+                    break;
+                case 3:
+                    LogicXor();
+                    break;
+                case 4:
+                    LogicNot();
+                    break;
+                case 5:
+                    LogicEqual();
+                    break;
+                case 6:
+                    LogicImplication();
+                    break;
+                case 7:
+                    Console.WriteLine("\n\t\tДякую за цікавіть! Всього найкращого!");
+                    return;
+                default:
+                    string upsError = "\t\t Невірний ввід. Виберіть опцію від 1 до 7.";
+                    DesingColorText(upsError, ConsoleColor.Black, ConsoleColor.Red);
+                    break;
+            }
         }
     }
+
+    static void DesingPrintTruthTable(string[,] truthTable)
+    {
+        int numRows = truthTable.GetLength(0);
+        int numCols = truthTable.GetLength(1);
+
+        // Виводимо заголовок таблиці
+        Console.WriteLine("\t{0,-5} {1,-5} {2,-5}", "\tA", "\t\tB", "\t\tResult");
+        Console.Write(new string(' ', 15));
+        Console.WriteLine(new string('-', 45));
+
+        // Виводимо значення масиву у вигляді таблиці
+        for (int i = 0; i < numRows; i++)
+        {
+            for (int j = 0; j < numCols; j++)
+            {
+                Console.Write("\t\t{0,-5} ", truthTable[i, j]);
+            }
+            Console.WriteLine();
+        }
+    }
+
+    static void LogicAnd()
+    {
+        bool[] a = { false, false, true, true };
+        bool[] b = { false, true, false, true };
+
+        string[,] truthTable = new string[4, 3];
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool result = a[i] && b[i];
+
+            truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
+            truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
+            truthTable[i, 2] = Convert.ToInt32(result).ToString();
+        }
+        string textTitle= "логічне І (&&)";
+        string  textDescription = "Логічне І поверне true, якщо обидва операнди є true. В інших випадках воно поверне false.";
+        DesingChoiceLogicOperator(textTitle, textDescription);
+        DesingPrintTruthTable(truthTable);
+    }
+
+    static void LogicOr()
+    {
+        bool[] a = { false, false, true, true };
+        bool[] b = { false, true, false, true };
+
+        string[,] truthTable = new string[4, 3];
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool result = a[i] || b[i];
+
+            truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
+            truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
+            truthTable[i, 2] = Convert.ToInt32(result).ToString();
+        }
+        string textTitle = "логічне АБО (||)";
+        string textDescription = "Логічне АБО поверне true, якщо хоча б один з операндів є true. Якщо обидва операнди є false, то воно поверне false.";
+        DesingChoiceLogicOperator(textTitle, textDescription);
+        DesingPrintTruthTable(truthTable);
+    }
+
+    static void LogicXor()
+    {
+        bool[] a = { false, false, true, true };
+        bool[] b = { false, true, false, true };
+
+        string[,] truthTable = new string[4, 3];
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool result = a[i] ^ b[i];
+
+            truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
+            truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
+            truthTable[i, 2] = Convert.ToInt32(result).ToString();
+        }
+        string textTitle = "ВИКЛЮЧНO-АБО (^)";
+        string textDescription = "Логічне ВИКЛЮЧНО-АБО поверне true, якщо тільки один з операндів є true. Якщо обидва операнди є true або false, то воно поверне false.";
+        DesingChoiceLogicOperator(textTitle, textDescription);
+        DesingPrintTruthTable(truthTable);
+    }
+
+    static void LogicNot()
+    {
+        bool[] a = { false, true };
+
+        string[,] truthTable = new string[2, 2];
+
+        for (int i = 0; i < 2; i++)
+        {
+            bool result = !a[i];
+
+            truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
+            truthTable[i, 1] = Convert.ToInt32(result).ToString();
+        }
+
+        string textTitle = "ЛОГІЧНЕ ЗАПЕРЕЧЕННЯ (!)";
+        string textDescription = "Логічне ЗАПЕРЕЧЕННЯ поверне true, якщо операнд є false, і false, якщо операнд є true.";
+
+        DesingChoiceLogicOperator(textTitle, textDescription);
+        DesingPrintTruthTable(truthTable);
+    }
+
+    static void LogicEqual()
+    {
+        bool[] a = { false, false, true, true };
+        bool[] b = { false, true, false, true };
+
+        string[,] truthTable = new string[4, 3];
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool result = a[i] == b[i];
+
+            truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
+            truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
+            truthTable[i, 2] = Convert.ToInt32(result).ToString();
+        }
+
+        string textTitle = "ЛОГІЧНА ЕКВІВАЛЕНТНІСТЬ (<=>)";
+        string textDescription = "Логічна ЕКВІВАЛЕНТНІСТЬ поверне true, якщо обидва операнди є true або обидва операнди є false. В іншому випадку, воно поверне false.";
+
+        DesingChoiceLogicOperator(textTitle, textDescription);
+        DesingPrintTruthTable(truthTable);
+    }
+
+    static void LogicImplication()
+    {
+        bool[] a = { false, false, true, true };
+        bool[] b = { false, true, false, true };
+
+        string[,] truthTable = new string[4, 3];
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool result = !a[i] || b[i];
+
+            truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
+            truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
+            truthTable[i, 2] = Convert.ToInt32(result).ToString();
+        }
+
+        string textTitle = "ІМПЛІКАЦІЯ (=>)";
+        string textDescription = "Логічна ІМПЛІКАЦІЯ поверне false, якщо перший операнд (a) є true, а другий операнд (b) є false. В іншому випадку, воно поверне true.";
+
+        DesingChoiceLogicOperator(textTitle, textDescription);
+        DesingPrintTruthTable(truthTable);
+    }
+
 
     static void GenerateAnswers()
     {
@@ -271,14 +519,7 @@ class Program
                 continue;
             }
 
-            // Псевдо-очікування відповіді програми
-            Console.Write("\t\t\tДумаю...");
-            Thread.Sleep(1000);
-            Console.Write("Думаю...");
-            Thread.Sleep(500);
-            Console.WriteLine("Думаю...");
-            Thread.Sleep(300);
-            DesingEmptyLines(2);
+            DesingWaiting();
 
             // Виводимо випадкову відповідь з масиву
             Random rand = new Random();
@@ -312,8 +553,9 @@ class Program
             Console.WriteLine("\t\t Виберіть опцію:");
             DesingEmptyLines(2);
             Console.WriteLine("\t 1. Згенерувати декілька логічних формул");
-            Console.WriteLine("\t 2. Дізнатись відповідь на будь-яке питання");
-            Console.WriteLine("\t 3. Вийти");
+            Console.WriteLine("\t 2. Дізнатись більше про логічні операції");
+            Console.WriteLine("\t 3. Дізнатись відповідь на будь-яке питання");
+            Console.WriteLine("\t 4. Вийти");
             DesingEmptyLines(1);
             Console.Write("\t\tВведіть номер опції: ");
 
@@ -333,10 +575,14 @@ class Program
                     while (tryAgain == true);
                     break;
                 case "2":
+                    Console.WriteLine("\n\t\t2. Тут ти можеш дізнатись про логічні оператори та їх значення!");
+                    LogicTheoryMenu();
+                    break;
+                case "3":
                     Console.WriteLine("\n\t\t2. Генератор відповідей");
                     GenerateAnswers();
                     break;
-                case "3":
+                case "4":
                     DesingEmptyLines(2);
                     string exitText = "***** Бувай до зустрічі!!! *****";
                     DesingCenterText(exitText);
