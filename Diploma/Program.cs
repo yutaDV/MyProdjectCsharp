@@ -86,7 +86,6 @@ class Program
         }
     }
 
-
     // Метод вітання користувача повертає ім'я користувача або присвоює імя анонім
     static string Welcome()
     {
@@ -247,7 +246,6 @@ class Program
         DesingPrintFormulasTable(formulas);
     }
 
-
     static void DesingChoiceLogicOperator(string textTitle, string textDescription)
     {
 
@@ -269,7 +267,7 @@ class Program
         while (true)
         {
             DesingEmptyLines(2);
-            Console.WriteLine("\t\tОберіть операцію про яку бажаєте дізнатись або натисніть 6:");
+            Console.WriteLine("\t\tОберіть операцію про яку бажаєте дізнатись або натисніть 7:");
             Console.WriteLine("\t1. Логічне І (&&)");
             Console.WriteLine("\t2. Логічне АБО (||)");
             Console.WriteLine("\t3. Виключе АБО XOR (^)");
@@ -338,6 +336,23 @@ class Program
                 Console.Write("\t\t{0,-5} ", truthTable[i, j]);
             }
             Console.WriteLine();
+        }
+    }
+
+    static void DesingPrintNotTable(string[,] truthTable)
+    {
+        int numRows = truthTable.GetLength(0);
+        int numCols = truthTable.GetLength(1);
+
+        // Виводимо заголовок таблиці
+        Console.WriteLine("\t{0}\t{1}", "A", "!A");
+        Console.Write(new string(' ', 5));
+        Console.WriteLine(new string('-', 15));
+
+        // Виводимо значення масиву у вигляді таблиці
+        for (int i = 0; i < numRows; i++)
+        {
+            Console.WriteLine("\t{0}\t{1}", truthTable[i, 0], truthTable[i, 1]);
         }
     }
 
@@ -422,7 +437,7 @@ class Program
         string textDescription = "Логічне ЗАПЕРЕЧЕННЯ поверне true, якщо операнд є false, і false, якщо операнд є true.";
 
         DesingChoiceLogicOperator(textTitle, textDescription);
-        DesingPrintTruthTable(truthTable);
+        DesingPrintNotTable(truthTable);
     }
 
     static void LogicEqual()
@@ -471,72 +486,35 @@ class Program
         DesingPrintTruthTable(truthTable);
     }
 
-
-    static void GenerateAnswers()
+    static void GeneratePpredictions()
     {
-        string[] answers = {
-            "Швидше за все так буде!",
-            "Звісно, ще трішки зачекай і дій",
-            "Важко сказати, але все можливо!",
-            "Звучить цікаво, але я не можу цього підтвердити.",
-            "Ні, цього не станеться.",
-            "Я не бажаю говорити про це.",
-            "Так, на 100%!",
-            "На жаль, все вказує на те, що так і не вдасться досягти бажаного результату.",
-            "Знаки показують, що на цей раз удача буде на вашій стороні.",
-            "На даний момент, все дуже непевно, але є шанс на успіх, якщо продовжувати працювати.",
-            "Все залежить від того, наскільки ви зосереджені та впевнені у своїх діях.",
-            "Я вірю, що ви зможете досягти бажаного результату, якщо підтримувати свої позитивні думки та дії.",
-            "Все показує на те, що досягнення бажаного результату буде потрібно більше часу та зусиль.",
-            "Час покаже, що можна досягти, але потрібно бути готовим до різних варіантів розвитку подій.",
-            "Все може статися, якщо ви продовжуєте вірити у себе та свої мрії.",
-            "Ніколи не здавайся, доки є можливість досягти бажаного результату.",
-            "Звісно, все буде добре!",
-            "Все вийде на відмінно!",
-            "Не переживай, це просто питання часу!",
-            "Ти дуже розумний, тобі точно вдасться!",
-            "Запитай пізніш"
-        };
-        // Виводимо привітання користувачеві
-        Console.WriteLine("\n\t\tЦе додатковий плагін генератора може надати відповідь на будь-яке ваше питання!");
-        DesingEmptyLines(1);
-        string textWarning = "\t\tЗважаючи що плагін в процесі розробки прошу ставити запитання закритого типу. ";
-        DesingColorText(textWarning, ConsoleColor.Black, ConsoleColor.Yellow);
+        string[] predictions = {"Сьогодні буде хороший день.",
+                                        "Ти зробиш велику справу сьогодні!",
+                                        "Всі твої мрії здійсняться.",
+                                        "Ти будеш дуже задоволений результатами своєї роботи.",
+                                        "Щасливі зміни чекають на тебе.",
+                                        "Твоя впевненість допоможе тобі досягти успіху.",
+                                        "Ти знаходишся на правильному шляху до своєї мети.",
+                                        "Твоя енергія та наполегливість допоможуть тобі досягти успіху.",
+                                        "Успіх вже чекає на тебе, ти просто мусиш досягнути його.",
+                                        "Твоя робота визнана і дуже цінується.",
+                                        "Ти дуже талановитий, і цей талант принесе тобі успіх.",
+                                        "Твоя наступна ідея буде дуже успішною.",
+                                        "Твоя творчість надихає та мотивує багатьох людей.",
+                                        "Ти маєш потенціал стати одним з найкращих в своїй сфері.",
+                                        "Ти заслуговуєш на успіх, і він обов'язково прийде."};
+
+        string positivePrediction = GeneratePrediction(predictions);
+        DesingWaiting();
+        DesingColorText("\t\t" + positivePrediction, ConsoleColor.Black, ConsoleColor.Cyan);
         DesingEmptyLines(2);
-        textWarning = "\t\t!Довідка! Це такі запитання при відповіді на які можна відповісти або «так», або «ні»";
-        DesingColorText(textWarning, ConsoleColor.Black, ConsoleColor.DarkYellow);
-        DesingEmptyLines(2);
-        while (true)
-        {
-            // Запитуємо користувача про його запитання
-            Console.Write("\n\t\tЗадай мені своє запитання: ");
-            string question = Console.ReadLine();
+    }
 
-            // Перевіряємо, чи користувач ввів запитання
-            if (string.IsNullOrWhiteSpace(question))
-            {
-                Console.WriteLine("\n\t\tВи не задали запитання! Якщо це таємниця то можеш зазначити будь-яку літеру.");
-                continue;
-            }
-
-            DesingWaiting();
-
-            // Виводимо випадкову відповідь з масиву
-            Random rand = new Random();
-            int answerIndex = rand.Next(0, answers.Length);
-            string texAnswer ="\t\t" + answers[answerIndex];
-            DesingColorText(texAnswer, ConsoleColor.Black, ConsoleColor.DarkCyan);
-
-            // Запитуємо користувача, чи він хоче задати ще одне запитання
-            bool answer = GetUserConfirmation("\n\t\tХочете задати ще одне запитання? ");
-        
-            // Якщо користувач відповів "ні", то виходимо з циклу
-            if (answer != true)
-            {
-                Console.WriteLine("\n\t\tДякую за цікавіть! Всього найкращого!");
-                break;
-            }
-        }
+    static string GeneratePrediction(string[] predictions)
+    {
+        Random random = new Random();
+        int index = random.Next(predictions.Length);
+        return predictions[index];
     }
 
 
@@ -554,7 +532,7 @@ class Program
             DesingEmptyLines(2);
             Console.WriteLine("\t 1. Згенерувати декілька логічних формул");
             Console.WriteLine("\t 2. Дізнатись більше про логічні операції");
-            Console.WriteLine("\t 3. Дізнатись відповідь на будь-яке питання");
+            Console.WriteLine("\t 3. БОНУС Передбачення");
             Console.WriteLine("\t 4. Вийти");
             DesingEmptyLines(1);
             Console.Write("\t\tВведіть номер опції: ");
@@ -579,8 +557,14 @@ class Program
                     LogicTheoryMenu();
                     break;
                 case "3":
-                    Console.WriteLine("\n\t\t2. Генератор відповідей");
-                    GenerateAnswers();
+                    Console.WriteLine("\n\t\tТримай передбачення: ");
+                    tryAgain = true;
+                    do
+                    {
+                        GeneratePpredictions();
+                        tryAgain = GetUserConfirmation("\n\t\tБажаєш отримати ще одне передбачення ");
+                    }
+                    while (tryAgain == true);
                     break;
                 case "4":
                     DesingEmptyLines(2);
