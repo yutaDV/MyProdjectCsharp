@@ -12,10 +12,8 @@ class Program
         /* Визначаємо координати для виведення тексту по центру
             x - розраховуємо відступ
             y  -виводимо в поточному рядку консолі*/
-
         int x = (Console.WindowWidth - text.Length) / 2; 
         int y = Console.CursorTop; 
-
         // Переміщуємо курсор до потрібної позиції та виводимо текст
         Console.SetCursorPosition(x, y);
         Console.WriteLine(text);
@@ -25,12 +23,10 @@ class Program
     //Дизайн-метод для виведення вказаної кількості порожніх рядків в консолі
     static void DesingEmptyLines(int count)
     {
-            
         for (int i = 0; i < count; i++)
         {
             Console.WriteLine();
         }
-            
     }
 
     //Дизайн-метод для виведення тексту в кольоровій гамі на кольоровому фоні
@@ -39,18 +35,14 @@ class Program
         // Зберігаємо поточні кольори консолі
         ConsoleColor oldForegroundColor = Console.ForegroundColor;
         ConsoleColor oldBackgroundColor = Console.BackgroundColor;
-
         // Змінюємо кольори
         Console.ForegroundColor = foregroundColor;
         Console.BackgroundColor = backgroundColor;
-
         // Виводимо текст
         Console.Write(text);
-
         // Повертаємо попередні кольори консолі
         Console.ForegroundColor = oldForegroundColor;
         Console.BackgroundColor = oldBackgroundColor;
-
     }
 
     // Дизайн-метод псевдо-очікування відповіді програми
@@ -70,15 +62,12 @@ class Program
     {
         // Визначити ширину першого стовпчика для номерів формул
         int firstColWidth = formulas.Length.ToString().Length;
-
         // Форматування рядка заголовка таблиці
         string header = "{0,-" + firstColWidth + "} | {1,-30}";
-
         // Виведення заголовка таблиці
         Console.WriteLine(header, "\n\t\tNo.", "Formula");
         Console.Write(new string(' ', 15));
         Console.WriteLine(new string('-', 60));
-
         // Виведення формул в табличному вигляді
         for (int i = 0; i < formulas.Length; i++)
         {
@@ -104,7 +93,6 @@ class Program
         string welcomeUser = $"\t\t Привіт, {userName}! розпочнемо!";
         DesingColorText(welcomeUser, ConsoleColor.Blue, ConsoleColor.Yellow);
         DesingEmptyLines(2);
-
         return userName;
     }
 
@@ -264,6 +252,8 @@ class Program
 
     static void LogicTheoryMenu()
     {
+        bool[] a = { false, false, true, true };
+        bool[] b = { false, true, false, true };
         while (true)
         {
             DesingEmptyLines(2);
@@ -290,22 +280,22 @@ class Program
             switch (choice)
             {
                 case 1:
-                    LogicAnd();
+                    LogicAnd(ref a, ref b);
                     break;
                 case 2:
-                    LogicOr();
+                    LogicOr(ref a, ref b);
                     break;
                 case 3:
-                    LogicXor();
+                    LogicXor(ref a, ref b);
                     break;
                 case 4:
                     LogicNot();
                     break;
                 case 5:
-                    LogicEqual();
+                    LogicEqual(ref a, ref b);
                     break;
                 case 6:
-                    LogicImplication();
+                    LogicImplication(ref a, ref b);
                     break;
                 case 7:
                     Console.WriteLine("\n\t\tДякую за цікавіть! Всього найкращого!");
@@ -318,16 +308,14 @@ class Program
         }
     }
 
-    static void DesingPrintTruthTable(string[,] truthTable)
+    static void DesingPrintTruthTable(string[,] truthTable, string oper)
     {
         int numRows = truthTable.GetLength(0);
         int numCols = truthTable.GetLength(1);
-
         // Виводимо заголовок таблиці
-        Console.WriteLine("\t{0,-5} {1,-5} {2,-5}", "\tA", "\t\tB", "\t\tResult");
+        Console.WriteLine("\t{0,-5} {1,-5} {2,-5}", "\tA", "\t\tB", $"\t     A {oper} B");
         Console.Write(new string(' ', 15));
         Console.WriteLine(new string('-', 45));
-
         // Виводимо значення масиву у вигляді таблиці
         for (int i = 0; i < numRows; i++)
         {
@@ -343,12 +331,10 @@ class Program
     {
         int numRows = truthTable.GetLength(0);
         int numCols = truthTable.GetLength(1);
-
         // Виводимо заголовок таблиці
         Console.WriteLine("\t{0}\t{1}", "A", "!A");
         Console.Write(new string(' ', 5));
         Console.WriteLine(new string('-', 15));
-
         // Виводимо значення масиву у вигляді таблиці
         for (int i = 0; i < numRows; i++)
         {
@@ -356,17 +342,13 @@ class Program
         }
     }
 
-    static void LogicAnd()
+    static void LogicAnd(ref bool[]a, ref bool[]b)
     {
-        bool[] a = { false, false, true, true };
-        bool[] b = { false, true, false, true };
-
         string[,] truthTable = new string[4, 3];
 
         for (int i = 0; i < 4; i++)
         {
             bool result = a[i] && b[i];
-
             truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
             truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
             truthTable[i, 2] = Convert.ToInt32(result).ToString();
@@ -374,20 +356,16 @@ class Program
         string textTitle= "логічне І (&&)";
         string  textDescription = "Логічне І поверне true, якщо обидва операнди є true. В інших випадках воно поверне false.";
         DesingChoiceLogicOperator(textTitle, textDescription);
-        DesingPrintTruthTable(truthTable);
+        DesingPrintTruthTable(truthTable, "&&");
     }
 
-    static void LogicOr()
+    static void LogicOr(ref bool[] a, ref bool[] b)
     {
-        bool[] a = { false, false, true, true };
-        bool[] b = { false, true, false, true };
-
         string[,] truthTable = new string[4, 3];
 
         for (int i = 0; i < 4; i++)
         {
             bool result = a[i] || b[i];
-
             truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
             truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
             truthTable[i, 2] = Convert.ToInt32(result).ToString();
@@ -395,20 +373,16 @@ class Program
         string textTitle = "логічне АБО (||)";
         string textDescription = "Логічне АБО поверне true, якщо хоча б один з операндів є true. Якщо обидва операнди є false, то воно поверне false.";
         DesingChoiceLogicOperator(textTitle, textDescription);
-        DesingPrintTruthTable(truthTable);
+        DesingPrintTruthTable(truthTable, "||");
     }
 
-    static void LogicXor()
+    static void LogicXor(ref bool[] a, ref bool[] b)
     {
-        bool[] a = { false, false, true, true };
-        bool[] b = { false, true, false, true };
-
         string[,] truthTable = new string[4, 3];
 
         for (int i = 0; i < 4; i++)
         {
             bool result = a[i] ^ b[i];
-
             truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
             truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
             truthTable[i, 2] = Convert.ToInt32(result).ToString();
@@ -416,7 +390,7 @@ class Program
         string textTitle = "ВИКЛЮЧНO-АБО (^)";
         string textDescription = "Логічне ВИКЛЮЧНО-АБО поверне true, якщо тільки один з операндів є true. Якщо обидва операнди є true або false, то воно поверне false.";
         DesingChoiceLogicOperator(textTitle, textDescription);
-        DesingPrintTruthTable(truthTable);
+        DesingPrintTruthTable(truthTable, "^");
     }
 
     static void LogicNot()
@@ -432,58 +406,44 @@ class Program
             truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
             truthTable[i, 1] = Convert.ToInt32(result).ToString();
         }
-
         string textTitle = "ЛОГІЧНЕ ЗАПЕРЕЧЕННЯ (!)";
         string textDescription = "Логічне ЗАПЕРЕЧЕННЯ поверне true, якщо операнд є false, і false, якщо операнд є true.";
-
         DesingChoiceLogicOperator(textTitle, textDescription);
         DesingPrintNotTable(truthTable);
     }
 
-    static void LogicEqual()
+    static void LogicEqual(ref bool[] a, ref bool[] b)
     {
-        bool[] a = { false, false, true, true };
-        bool[] b = { false, true, false, true };
-
         string[,] truthTable = new string[4, 3];
 
         for (int i = 0; i < 4; i++)
         {
             bool result = a[i] == b[i];
-
             truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
             truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
             truthTable[i, 2] = Convert.ToInt32(result).ToString();
         }
-
         string textTitle = "ЛОГІЧНА ЕКВІВАЛЕНТНІСТЬ (<=>)";
         string textDescription = "Логічна ЕКВІВАЛЕНТНІСТЬ поверне true, якщо обидва операнди є true або обидва операнди є false. В іншому випадку, воно поверне false.";
-
         DesingChoiceLogicOperator(textTitle, textDescription);
-        DesingPrintTruthTable(truthTable);
+        DesingPrintTruthTable(truthTable, "<=>");
     }
 
-    static void LogicImplication()
+    static void LogicImplication(ref bool[] a, ref bool[] b)
     {
-        bool[] a = { false, false, true, true };
-        bool[] b = { false, true, false, true };
-
         string[,] truthTable = new string[4, 3];
 
         for (int i = 0; i < 4; i++)
         {
             bool result = !a[i] || b[i];
-
             truthTable[i, 0] = Convert.ToInt32(a[i]).ToString();
             truthTable[i, 1] = Convert.ToInt32(b[i]).ToString();
             truthTable[i, 2] = Convert.ToInt32(result).ToString();
         }
-
         string textTitle = "ІМПЛІКАЦІЯ (=>)";
         string textDescription = "Логічна ІМПЛІКАЦІЯ поверне false, якщо перший операнд (a) є true, а другий операнд (b) є false. В іншому випадку, воно поверне true.";
-
         DesingChoiceLogicOperator(textTitle, textDescription);
-        DesingPrintTruthTable(truthTable);
+        DesingPrintTruthTable(truthTable, "=>");
     }
 
     static void GeneratePpredictions()
@@ -517,13 +477,10 @@ class Program
         return predictions[index];
     }
 
-
     //метод який відображає основне меню та визначає наступний метод відповідно до вибору користувача
     static void Menu()
     {
-
         bool isGoing = true;
-
         while (isGoing)
         {
 
@@ -536,10 +493,7 @@ class Program
             Console.WriteLine("\t 4. Вийти");
             DesingEmptyLines(1);
             Console.Write("\t\tВведіть номер опції: ");
-
-
             string choice = Console.ReadLine();
-
             switch (choice)
             {
                 case "1":
@@ -553,7 +507,7 @@ class Program
                     while (tryAgain == true);
                     break;
                 case "2":
-                    Console.WriteLine("\n\t\t2. Тут ти можеш дізнатись про логічні оператори та їх значення!");
+                    Console.WriteLine("\n\t\t2. Тут ви можете дізнатись про логічні оператори та їх значення!");
                     LogicTheoryMenu();
                     break;
                 case "3":
